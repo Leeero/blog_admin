@@ -1,0 +1,17 @@
+.article {
+  &_search {
+    margin: 24px;
+    padding: 16px;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    &-input {
+      width: 60%;
+    }
+  }
+  &_table {
+    margin: 24px;
+    padding: 16px;
+    background: #ffffff;
+  }
+}
