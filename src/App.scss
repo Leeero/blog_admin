@@ -1,1 +1,11 @@
 @import '~antd/dist/antd.css';
+
+.app {
+  height: 100vh;
+  &_layout {
+    height: 100%;
+  }
+  &_content {
+    padding: 5px;
+  }
+}

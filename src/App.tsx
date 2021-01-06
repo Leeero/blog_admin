@@ -2,7 +2,7 @@ import { FileOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
 import React, { useState } from 'react'
 import { Link, Route, Switch, useLocation } from 'react-router-dom'
-import './index.scss'
+import './App.scss'
 import Article from './pages/Article'
 import Tag from './pages/Tag'
 
@@ -27,10 +27,9 @@ export default function App() {
   }
 
   return (
-    <div className="home">
-      <Layout className="home_layout">
+    <div className="app">
+      <Layout className="app_layout">
         <Sider collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)}>
-          <div className="logo" />
           <Menu theme="dark" defaultSelectedKeys={selectedMenu} mode="inline">
             <Menu.Item key="article" icon={<FileOutlined />}>
               <Link to="/article">文章管理</Link>
@@ -43,8 +42,8 @@ export default function App() {
             </Menu.Item>
           </Menu>
         </Sider>
-        <Layout className="site-layout">
-          <Content className="site-layout-background">
+        <Layout>
+          <Content className="app_content">
             <Switch>
               <Route exact path="/" component={Article} />
               <Route exact path="/article" component={Article} />
