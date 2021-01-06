@@ -8,7 +8,7 @@ import PageLoading from '../components/PageLoading'
 const history = createBrowserHistory()
 
 const Home = Loadable({
-  loader: () => import('../pages/Home'),
+  loader: () => import('../pages/Article'),
   loading: () => <PageLoading />,
 })
 
