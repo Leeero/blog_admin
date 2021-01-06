@@ -1,0 +1,40 @@
+.edit {
+  &_header {
+    height: 72px;
+    background: #ffffff;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+  }
+  &_content {
+    background: #ffffff;
+    margin: 24px;
+    padding: 16px;
+    height: calc(100vh - 130px);
+
+    button {
+      margin-left: 10px;
+    }
+    &-header {
+      display: flex;
+      justify-content: space-between;
+    }
+    &-title {
+      display: flex;
+      width: 50%;
+      align-items: center;
+      justify-content: center;
+      p {
+        width: 100px;
+        margin-bottom: 0;
+      }
+    }
+    &-editor {
+      height: 100%;
+      margin-top: 16px;
+    }
+    &-introduction {
+      padding-left: 16px;
+    }
+  }
+}

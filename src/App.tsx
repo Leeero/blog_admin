@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Link, Route, Switch, useLocation } from 'react-router-dom'
 import './App.scss'
 import Article from './pages/Article'
+import ArticleEdit from './pages/Article/views/ArticleEdit'
 import Tag from './pages/Tag'
 
 const { Content, Sider } = Layout
@@ -16,6 +17,7 @@ export default function App() {
   switch (pathname) {
     case '/':
     case '/article':
+    case '/article/create':
       selectedMenu = ['article']
       break
     case '/tag':
@@ -47,6 +49,7 @@ export default function App() {
             <Switch>
               <Route exact path="/" component={Article} />
               <Route exact path="/article" component={Article} />
+              <Route exact path="/article/create" component={ArticleEdit} />
               <Route exact path="/tag" component={Tag} />
             </Switch>
           </Content>

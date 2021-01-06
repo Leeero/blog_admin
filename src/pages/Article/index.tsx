@@ -63,7 +63,7 @@ export default function Article() {
       ),
     },
     {
-      title: 'Action',
+      title: '操作',
       key: 'action',
       width: 150,
       render: () => (
@@ -101,7 +101,13 @@ export default function Article() {
         backIcon={false}
         title="文章列表"
         extra={[
-          <Button type="primary" icon={<PlusOutlined />}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              history.push('/article/create')
+            }}
+          >
             新增
           </Button>,
         ]}
