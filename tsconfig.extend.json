@@ -7,6 +7,7 @@
       "@assets/*": ["src/assets/*"],
       "@common/*": ["src/common/*"],
       "@components/*": ["src/components/*"],
+      "@api/*": ["src/api/*"],
       "@utils/*": ["src/utils/*"]
     }
   }

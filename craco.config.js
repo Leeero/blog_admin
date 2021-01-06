@@ -12,6 +12,7 @@ module.exports = {
       '@common': pathResolve('src/common'),
       '@components': pathResolve('src/components'),
       '@utils': pathResolve('src/utils'),
+      '@api': pathResolve('src/api'),
       // 此处是一个示例，实际可根据各自需求配置
     },
   },

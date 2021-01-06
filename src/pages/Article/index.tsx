@@ -1,6 +1,7 @@
+import { getArticleLists } from '@/api/Article'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Input, PageHeader, Space, Table, Tag } from 'antd'
-import React from 'react'
+import { Button, Input, message, PageHeader, Space, Table, Tag } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './index.scss'
 
@@ -30,55 +31,68 @@ const data = [
 
 export default function Article() {
   const history = useHistory()
+  const [tableData, setTableData] = useState()
+  const [isLoading, setIsLoading] = useState(false)
 
-  const columns = [
+  const tableColumns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: '标题',
+      dataIndex: 'articleTitle',
+      key: 'articleTitle',
       render: (text: React.ReactNode) => <a>{text}</a>,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'ID',
+      dataIndex: 'articleId',
+      key: 'articleId',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: '简介',
+      dataIndex: 'articleIntroduction',
+      key: 'articleIntroduction',
+      width: '50%',
     },
     {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (tags: any[]) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green'
-            if (tag === 'loser') {
-              color = 'volcano'
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            )
-          })}
-        </>
+      title: '类型',
+      key: 'articleType',
+      dataIndex: 'articleType',
+      render: (text: any, record: { articleId: string | number | null | undefined }) => (
+        <Tag key={record.articleId} color="#87d068">
+          {text}
+        </Tag>
       ),
     },
     {
       title: 'Action',
       key: 'action',
-      render: (text: any, record: { name: React.ReactNode }) => (
+      width: 150,
+      render: () => (
         <Space size="middle">
-          <a>Invite {record.name}</a>
-          <a>Delete</a>
+          <a>编辑</a>
+          <a>删除</a>
         </Space>
       ),
     },
   ]
+
+  /**
+   * 获取文章列表数据
+   *
+   */
+  const handleGetArticleLists = async () => {
+    setIsLoading(true)
+    try {
+      const { articleLists } = await getArticleLists()
+      setTableData(articleLists)
+      setIsLoading(false)
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    handleGetArticleLists()
+  }, [])
 
   return (
     <div className="article">
@@ -101,7 +115,7 @@ export default function Article() {
         </div>
       </div>
       <div className="article_table">
-        <Table columns={columns} dataSource={data} />
+        <Table columns={tableColumns} dataSource={tableData} loading={isLoading} />
       </div>
     </div>
   )
