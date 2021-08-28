@@ -1,4 +1,6 @@
-import { Breadcrumb, Button, Col, Input, Row, Select } from 'antd'
+import { createNewArticle } from '@/api/Article'
+import cloudbase from '@cloudbase/js-sdk'
+import { Breadcrumb, Button, Col, Input, message, Row, Select } from 'antd'
 import React, { useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import Editor from 'react-markdown-editor-lite'
@@ -9,6 +11,12 @@ import './index.scss'
 const { Option } = Select
 const { TextArea } = Input
 
+const app = cloudbase.init({
+  env: 'cloudbase-prepaid-9egn8486f362e1',
+  region: 'ap-guangzhou',
+})
+var db = app.database()
+
 export default function ArticleEdit() {
   const mdEditor = useRef(null)
   const [markdownValue, setMarkdownValue] = useState()
@@ -16,11 +24,38 @@ export default function ArticleEdit() {
   const history = useHistory()
   const [isLoading, setIsLoading] = useState(false)
 
-  // @ts-ignore
+  //@ts-ignore
   const handleEditorChange = ({ text }) => {
     const newValue = text.replace(/\d/g, '')
     console.log(newValue)
     setMarkdownValue(newValue)
+  }
+
+  const handleCreateNewArticle = async () => {
+    message.loading('加载中...')
+    try {
+      const res = await createNewArticle({
+        articleClassification: 'vue',
+        articleTitle: 'Test',
+        articleTags: ['1', '2'],
+        articleCreateTime: '10.00',
+        articleContent: '测试',
+        articleProfile: '这是简介',
+      })
+      message.success('新增成功!')
+      console.log('🚀 ~ file: ArticleEdit.tsx ~ line 44 ~ handleCreateNewArticle ~ res', res)
+    } catch (error) {
+      console.log('🚀 ~ file: ArticleEdit.tsx ~ line 47 ~ handleCreateNewArticle ~ error', error)
+      message.error(error.code)
+    }
+  }
+
+  const handleGetArticles = async () => {
+    db.collection('blog_articles')
+      .get()
+      .then((res) => {
+        console.log(res.data)
+      })
   }
 
   return (
@@ -40,8 +75,10 @@ export default function ArticleEdit() {
             <Input placeholder="请输入文章标题" maxLength={20} />
           </div>
           <div className="edit_content-action">
-            <Button>存为草稿</Button>
-            <Button type="primary">发布文章</Button>
+            <Button onClick={() => handleGetArticles()}>存为草稿</Button>
+            <Button type="primary" onClick={() => handleCreateNewArticle()}>
+              发布文章
+            </Button>
           </div>
         </div>
         <Row className="edit_content-editor">
