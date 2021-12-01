@@ -11,7 +11,7 @@ interface CreateArticleParamsType {
   // 文章标签
   articleTags: string[]
   // 文章创建时间
-  articleCreateTime: string
+  articleCreateTime: number
   // 文章内容
   articleContent: string
   // 文章简介

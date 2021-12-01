@@ -1,6 +1,6 @@
 import { createNewArticle } from '@/api/Article'
 import cloudbase from '@cloudbase/js-sdk'
-import { Breadcrumb, Button, Col, Input, message, Row, Select } from 'antd'
+import { Button, Input, message, Select, PageHeader, Form, Drawer, Space } from 'antd'
 import React, { useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import Editor from 'react-markdown-editor-lite'
@@ -12,41 +12,66 @@ const { Option } = Select
 const { TextArea } = Input
 
 const app = cloudbase.init({
-  env: 'cloudbase-prepaid-9egn8486f362e1',
-  region: 'ap-guangzhou',
+  env: 'blog-0gpyjydc66f2d57f',
+  region: 'ap-shanghai',
 })
 var db = app.database()
 
+const MOCK_TAGS = [
+  {
+    value: 'react',
+    label: 'React',
+  },
+  {
+    value: 'vue',
+    label: 'Vue',
+  },
+  {
+    value: 'angular',
+    label: 'Angular',
+  },
+]
+
 export default function ArticleEdit() {
   const mdEditor = useRef(null)
-  const [markdownValue, setMarkdownValue] = useState()
-
   const history = useHistory()
-  const [isLoading, setIsLoading] = useState(false)
+
+  // 是否展示抽屉
+  const [isShowDrawer, setIsShowDrawer] = useState<boolean>(false)
+  // 文章内容
+  const [markdownValue, setMarkdownValue] = useState<string>('')
+  // 文章标题
+  const [articleTitle, setArticleTitle] = useState<string>('')
+  // 文章简介
+  const [articleProfile, setArticleProfile] = useState<string>('')
+  // 文章分类
+  const [articleClassification, setArticleClassification] = useState<string>('')
 
   //@ts-ignore
   const handleEditorChange = ({ text }) => {
     const newValue = text.replace(/\d/g, '')
-    console.log(newValue)
     setMarkdownValue(newValue)
   }
 
+  /**
+   * 新增文章
+   *
+   */
   const handleCreateNewArticle = async () => {
     message.loading('加载中...')
     try {
       const res = await createNewArticle({
-        articleClassification: 'vue',
-        articleTitle: 'Test',
+        articleClassification,
+        articleTitle,
         articleTags: ['1', '2'],
-        articleCreateTime: '10.00',
-        articleContent: '测试',
-        articleProfile: '这是简介',
+        articleCreateTime: new Date().valueOf(),
+        articleContent: markdownValue,
+        articleProfile,
       })
+      message.destroy()
       message.success('新增成功!')
-      console.log('🚀 ~ file: ArticleEdit.tsx ~ line 44 ~ handleCreateNewArticle ~ res', res)
     } catch (error) {
       console.log('🚀 ~ file: ArticleEdit.tsx ~ line 47 ~ handleCreateNewArticle ~ error', error)
-      message.error(error.code)
     }
   }
 
@@ -61,54 +86,86 @@ export default function ArticleEdit() {
   return (
     <div className="edit">
       <div className="edit_header">
-        <Breadcrumb>
-          <Breadcrumb.Item>
-            <a href="/article">文章列表</a>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>新增文章</Breadcrumb.Item>
-        </Breadcrumb>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="新增文章"
+          style={{ width: '100%' }}
+          extra={[
+            <Button onClick={() => handleGetArticles()}>存为草稿</Button>,
+            <Button type="primary" onClick={() => setIsShowDrawer(true)}>
+              发布文章
+            </Button>,
+          ]}
+        ></PageHeader>
       </div>
       <div className="edit_content">
-        <div className="edit_content-header">
-          <div className="edit_content-title">
-            <p>文章标题:</p>
-            <Input placeholder="请输入文章标题" maxLength={20} />
-          </div>
-          <div className="edit_content-action">
-            <Button onClick={() => handleGetArticles()}>存为草稿</Button>
-            <Button type="primary" onClick={() => handleCreateNewArticle()}>
-              发布文章
-            </Button>
-          </div>
-        </div>
-        <Row className="edit_content-editor">
-          <Col span={20} style={{ height: '100%' }}>
-            <Editor
-              ref={mdEditor}
-              value={markdownValue}
-              style={{
-                height: '94%',
+        <Form>
+          <Form.Item label="文章标题:">
+            <Input
+              placeholder="请输入文章标题"
+              maxLength={20}
+              value={articleTitle}
+              onChange={(value) => {
+                setArticleTitle(value.target.value)
               }}
-              onChange={handleEditorChange}
-              renderHTML={(text) => <ReactMarkdown source={text} />}
             />
-          </Col>
-          <Col span={4} className="edit_content-introduction">
-            <div>
-              <p>文章分类:</p>
-              <Select defaultValue="lucy" style={{ width: '100%', marginBottom: '10px' }}>
-                <Option value="jack">Vue</Option>
-                <Option value="lucy">React</Option>
-                <Option value="Yiminghe">Node</Option>
-              </Select>
-            </div>
-            <div>
-              <p>文章简介:</p>
-              <TextArea autoSize={{ minRows: 4, maxRows: 10 }} maxLength={200} placeholder="请输入文章简介" />
-            </div>
-          </Col>
-        </Row>
+          </Form.Item>
+        </Form>
+        <div className="edit_content_editor">
+          <Editor
+            ref={mdEditor}
+            value={markdownValue}
+            style={{
+              height: '94%',
+            }}
+            onChange={handleEditorChange}
+            renderHTML={(text) => <ReactMarkdown source={text} />}
+          />
+        </div>
       </div>
+      <Drawer
+        title="发布文章"
+        width={500}
+        onClose={() => setIsShowDrawer(false)}
+        visible={isShowDrawer}
+        extra={
+          <Space>
+            <Button onClick={() => setIsShowDrawer(false)}>取消</Button>
+            <Button type="primary" onClick={() => handleCreateNewArticle()}>
+              确认发布
+            </Button>
+          </Space>
+        }
+      >
+        <Form>
+          <Form.Item label="文章分类:">
+            <Select
+              style={{ width: '100%', marginBottom: '10px' }}
+              onChange={(value: string) => {
+                setArticleClassification(value)
+              }}
+            >
+              {MOCK_TAGS.map((item) => (
+                <Option key={item.value} value={item.value}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="文章简介:">
+            <TextArea
+              autoSize={{ minRows: 4, maxRows: 10 }}
+              maxLength={200}
+              placeholder="请输入文章简介"
+              value={articleProfile}
+              onChange={(e) => {
+                setArticleProfile(e.target.value)
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Drawer>
     </div>
   )
 }
