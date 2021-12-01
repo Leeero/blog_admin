@@ -86,6 +86,7 @@ export default function Article() {
       setTableData(articleLists)
       setIsLoading(false)
     } catch (error) {
+      //@ts-ignore
       message.error(error.message)
     }
   }
